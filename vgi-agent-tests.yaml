@@ -1,0 +1,68 @@
+# Private graders for the public vgi.agent_test_tasks in the worker's catalog metadata.
+# `vgi-lint lint --ai` runs an agent on each prompt and grades it with check_sql.
+# See https://github.com/Query-farm/vgi-lint-check (VGI920).
+# The graders assume the seeded fixture (scripts/dagster_fixture.sh up) and a dagster secret
+# pointing at it; live data elsewhere differs, so they grade with check_sql, not reference_sql.
+tasks:
+  - name: failed_runs_by_job
+    check_sql: >-
+      SELECT count(*) = 2 FROM dagster.main.runs WHERE status = 'FAILURE'
+  - name: failed_partitions
+    check_sql: >-
+      SELECT list(partition_key) = ['2026-01-03'] FROM dagster.main.asset_partitions
+      WHERE asset_key = 'daily_events' AND status = 'FAILED'
+  - name: failing_checks
+    check_sql: >-
+      SELECT list(check_name) = ['customer_totals_has_rows'] FROM dagster.main.asset_checks
+      WHERE latest_status = 'FAILED'
+  - name: schedule_targets
+    check_sql: >-
+      SELECT bool_and(job_name = 'etl_job' AND cron_schedule = '0 6 * * *') FROM dagster.main.schedules
+  - name: check_history
+    check_sql: >-
+      SELECT sum(n) = 3 FROM (SELECT count(*) AS n FROM dagster.main.asset_check_executions GROUP BY check_name)
+  - name: raw_orders_row_counts
+    check_sql: >-
+      SELECT bool_and(metadata->>'row_count' = '42') AND count(*) = 2
+      FROM dagster.main.asset_materializations WHERE asset_key = 'raw_orders'
+  - name: downstream_of_raw_orders
+    check_sql: >-
+      SELECT depended_by_keys = ['customer_totals'] FROM dagster.main.assets WHERE asset_key = 'raw_orders'
+  - name: broken_code_locations
+    check_sql: >-
+      SELECT count(*) = 0 FROM dagster.main.code_locations WHERE error_message IS NOT NULL
+  - name: pool_backlog
+    check_sql: >-
+      SELECT count(*) = 0 FROM dagster.main.concurrency_keys WHERE pending_step_count > 0
+  # Dagster+ only: grade against a Dagster+ deployment (the OSS fixture has no deployments).
+  - name: plus_deployments
+    check_sql: >-
+      SELECT count(*) > 0 FROM dagster.main.deployments
+  - name: op_jobs_by_team
+    check_sql: >-
+      SELECT list(job_name) = ['etl_job'] FROM dagster.main.jobs WHERE NOT is_asset_job
+  - name: repository_contents
+    check_sql: >-
+      SELECT job_count = 3 AND schedule_count = 1 AND sensor_count = 1 FROM dagster.main.repositories
+  - name: resource_consumers
+    check_sql: >-
+      SELECT jobs_using = ['etl_job'] FROM dagster.main.resources WHERE resource_name = 'greeter'
+  - name: sensor_targets
+    check_sql: >-
+      SELECT target_jobs = ['etl_job'] AND status = 'STOPPED' FROM dagster.main.sensors
+  - name: latest_failure_reason
+    check_sql: >-
+      SELECT (SELECT job_name FROM dagster.main.run('00000000-0000-4000-8000-000000000003')) = 'etl_job'
+         AND (SELECT count(*) FROM dagster.main.run_step_stats('00000000-0000-4000-8000-000000000003')) = 1
+         AND (SELECT error_class FROM dagster.main.run_events('00000000-0000-4000-8000-000000000003')
+              WHERE event_type = 'STEP_FAILURE') = 'RuntimeError'
+  - name: cross_orchestrator_status
+    check_sql: >-
+      SELECT list(status ORDER BY status) = ['failed', 'success'] FROM (SELECT DISTINCT status FROM dagster.unified.runs)
+  - name: flaky_steps
+    check_sql: >-
+      SELECT count(*) = 2 FROM dagster.unified.task_runs WHERE status = 'failed'
+  - name: normalize_statuses
+    reference_sql: >-
+      SELECT s, dagster.main.unified_run_status(s) AS status FROM (VALUES ('FAILURE'), ('CANCELED'), ('STARTING')) t(s)
+      ORDER BY s

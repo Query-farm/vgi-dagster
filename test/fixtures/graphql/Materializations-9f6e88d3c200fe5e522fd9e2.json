@@ -1,0 +1,75 @@
+{
+ "operation": "Materializations",
+ "query": "\nquery Materializations(\n  $assetKey: AssetKeyInput!, $before: String, $after: String, $partitions: [String!], $limit: Int\n) {\n  assetOrError(assetKey: $assetKey) {\n    __typename\n    ... on Asset {\n      assetMaterializations(\n        beforeTimestampMillis: $before, afterTimestampMillis: $after, partitions: $partitions, limit: $limit\n      ) {\n        runId timestamp partition stepKey label description\n        tags { key value }\n        metadataEntries { ...MetadataFields }\n      }\n    }\n    ... on AssetNotFoundError { message }\n  }\n}\n\nfragment MetadataFields on MetadataEntry {\n  __typename\n  label\n  ... on TextMetadataEntry { text }\n  ... on IntMetadataEntry { intValue intRepr }\n  ... on FloatMetadataEntry { floatValue floatRepr }\n  ... on BoolMetadataEntry { boolValue }\n  ... on JsonMetadataEntry { jsonString }\n  ... on MarkdownMetadataEntry { mdStr }\n  ... on PathMetadataEntry { path }\n  ... on NotebookMetadataEntry { path }\n  ... on UrlMetadataEntry { url }\n  ... on TimestampMetadataEntry { timestamp }\n  ... on PipelineRunMetadataEntry { runId }\n  ... on AssetMetadataEntry { assetKey { path } }\n  ... on JobMetadataEntry { jobName }\n  ... on PoolMetadataEntry { pool }\n}\n",
+ "response": {
+  "data": {
+   "assetOrError": {
+    "__typename": "Asset",
+    "assetMaterializations": [
+     {
+      "description": null,
+      "label": "daily_events",
+      "metadataEntries": [
+       {
+        "__typename": "TextMetadataEntry",
+        "label": "partition",
+        "text": "2026-01-02"
+       }
+      ],
+      "partition": "2026-01-02",
+      "runId": "00000000-0000-4000-8000-000000000005",
+      "stepKey": "daily_events",
+      "tags": [
+       {
+        "key": "dagster/code_version",
+        "value": "00000000-0000-4000-8000-000000000005"
+       },
+       {
+        "key": "dagster/data_version",
+        "value": "3303f939347e9e00bf721ce8f25c84ea126b9f2db0421cfb63ab278380b9b96d"
+       }
+      ],
+      "timestamp": "1794723926722"
+     },
+     {
+      "description": null,
+      "label": "daily_events",
+      "metadataEntries": [
+       {
+        "__typename": "TextMetadataEntry",
+        "label": "partition",
+        "text": "2026-01-01"
+       }
+      ],
+      "partition": "2026-01-01",
+      "runId": "00000000-0000-4000-8000-000000000004",
+      "stepKey": "daily_events",
+      "tags": [
+       {
+        "key": "dagster/code_version",
+        "value": "00000000-0000-4000-8000-000000000004"
+       },
+       {
+        "key": "dagster/data_version",
+        "value": "008bf60b9309e6141ae7eb98acb2a35d7b6c84c27d3973561d60b32b070f95c8"
+       }
+      ],
+      "timestamp": "1794723914342"
+     }
+    ]
+   }
+  }
+ },
+ "status": 200,
+ "variables": {
+  "after": null,
+  "assetKey": {
+   "path": [
+    "daily_events"
+   ]
+  },
+  "before": null,
+  "limit": 200,
+  "partitions": null
+ }
+}

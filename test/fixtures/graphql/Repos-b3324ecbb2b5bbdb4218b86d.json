@@ -1,0 +1,39 @@
+{
+ "operation": "Repos",
+ "query": "query Repos { repositoriesOrError { __typename ... on RepositoryConnection { nodes { name location { name } sensors { id name description sensorType defaultStatus minIntervalSeconds targets { pipelineName } sensorState { status } } } } ... on PythonError { message } } }",
+ "response": {
+  "data": {
+   "repositoriesOrError": {
+    "__typename": "RepositoryConnection",
+    "nodes": [
+     {
+      "location": {
+       "name": "definitions.py"
+      },
+      "name": "__repository__",
+      "sensors": [
+       {
+        "defaultStatus": "STOPPED",
+        "description": "Never fires; here so the sensors table has a row.",
+        "id": "6ca71ebe3236dea0ac5617165d3dbe0d4d063d77::e9b377c748c9f1460229f15187250a6c2413d4a3",
+        "minIntervalSeconds": 30,
+        "name": "noop_sensor",
+        "sensorState": {
+         "status": "STOPPED"
+        },
+        "sensorType": "STANDARD",
+        "targets": [
+         {
+          "pipelineName": "etl_job"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ },
+ "status": 200,
+ "variables": {}
+}

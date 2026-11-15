@@ -1,0 +1,39 @@
+{
+ "operation": "CodeLocations",
+ "query": "\nquery CodeLocations {\n  workspaceOrError {\n    __typename\n    ... on Workspace {\n      locationEntries {\n        name\n        loadStatus\n        updatedTimestamp\n        locationOrLoadError {\n          __typename\n          ... on RepositoryLocation { isReloadSupported dagsterLibraryVersions { name version } repositories { name } }\n          ... on PythonError { message }\n        }\n      }\n    }\n    ... on PythonError { message }\n  }\n}\n",
+ "response": {
+  "data": {
+   "workspaceOrError": {
+    "__typename": "Workspace",
+    "locationEntries": [
+     {
+      "loadStatus": "LOADED",
+      "locationOrLoadError": {
+       "__typename": "RepositoryLocation",
+       "dagsterLibraryVersions": [
+        {
+         "name": "dagster",
+         "version": "1.13.30"
+        },
+        {
+         "name": "dagster-shared",
+         "version": "1.13.30"
+        }
+       ],
+       "isReloadSupported": true,
+       "repositories": [
+        {
+         "name": "__repository__"
+        }
+       ]
+      },
+      "name": "definitions.py",
+      "updatedTimestamp": 1794723980.707198
+     }
+    ]
+   }
+  }
+ },
+ "status": 200,
+ "variables": {}
+}

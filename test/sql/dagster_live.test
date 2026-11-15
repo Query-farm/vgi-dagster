@@ -1,0 +1,55 @@
+# name: test/sql/dagster_live.test
+# description: The dagster catalog against a live open-source dagster-webserver
+# group: [dagster]
+#
+# Runs only when DAGSTER_LIVE_URL is set: `make test-live` starts the seeded fixture
+# (scripts/dagster_fixture.sh up) and sets it. Otherwise this file is skipped with
+# reason "require-env DAGSTER_LIVE_URL", which the harness expects.
+
+require vgi
+
+require-env DAGSTER_WORKER
+
+require-env DAGSTER_LIVE_URL
+
+statement ok
+ATTACH 'dagster' (TYPE vgi, LOCATION '{DAGSTER_WORKER}');
+
+statement ok
+CREATE SECRET dagster_live (TYPE dagster, BASE_URL '{DAGSTER_LIVE_URL}');
+
+query TT
+SELECT job_name, status FROM dagster.main.runs WHERE run_id = '00000000-0000-4000-8000-000000000003';
+----
+etl_job	FAILURE
+
+query TI
+SELECT status, count(*) FROM dagster.unified.runs GROUP BY status ORDER BY status;
+----
+failed	2
+success	5
+
+query TTT
+SELECT step_key, error_class, error_message FROM dagster.main.run_events('00000000-0000-4000-8000-000000000003') WHERE event_type = 'STEP_FAILURE';
+----
+extract	RuntimeError	RuntimeError: extract was told to fail
+
+query TT
+SELECT partition_key, status FROM dagster.main.asset_partitions WHERE status <> 'MISSING' ORDER BY partition_key;
+----
+2026-01-01	MATERIALIZED
+2026-01-02	MATERIALIZED
+2026-01-03	FAILED
+
+query TT
+SELECT check_name, latest_status FROM dagster.main.asset_checks ORDER BY check_name;
+----
+customer_totals_has_rows	FAILED
+raw_orders_not_empty	SUCCEEDED
+
+query TI
+SELECT asset_key, count(*) FROM dagster.main.asset_materializations GROUP BY asset_key ORDER BY asset_key;
+----
+customer_totals	1
+daily_events	2
+raw_orders	2

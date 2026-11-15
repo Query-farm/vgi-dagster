@@ -1,0 +1,41 @@
+{
+ "operation": "AssetKeys",
+ "query": "\nquery AssetKeys($assetKeys: [AssetKeyInput!], $cursor: String, $limit: Int) {\n  assetsOrError(assetKeys: $assetKeys, cursor: $cursor, limit: $limit) {\n    __typename\n    ... on AssetConnection { cursor nodes { key { path } } }\n    ... on PythonError { message }\n  }\n}\n",
+ "response": {
+  "data": {
+   "assetsOrError": {
+    "__typename": "AssetConnection",
+    "cursor": "[\"raw_orders\"]",
+    "nodes": [
+     {
+      "key": {
+       "path": [
+        "customer_totals"
+       ]
+      }
+     },
+     {
+      "key": {
+       "path": [
+        "daily_events"
+       ]
+      }
+     },
+     {
+      "key": {
+       "path": [
+        "raw_orders"
+       ]
+      }
+     }
+    ]
+   }
+  }
+ },
+ "status": 200,
+ "variables": {
+  "assetKeys": null,
+  "cursor": null,
+  "limit": 1000
+ }
+}

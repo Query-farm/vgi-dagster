@@ -1,0 +1,387 @@
+{
+ "operation": "Runs",
+ "query": "query Runs($filter: RunsFilter, $cursor: String, $limit: Int!) { runsOrError(filter: $filter, cursor: $cursor, limit: $limit) { __typename ... on Runs { results { \n  runId status jobName mode creationTime startTime endTime updateTime rootRunId parentRunId\n  tags { key value }\n  assetSelection { path }\n  stats { __typename ... on RunStatsSnapshot { stepsSucceeded stepsFailed materializations enqueuedTime } }\nstepStats { stepKey status startTime endTime attempts { startTime endTime } } } } ... on InvalidPipelineRunsFilterError { message } ... on PythonError { message } } }",
+ "response": {
+  "data": {
+   "runsOrError": {
+    "__typename": "Runs",
+    "results": [
+     {
+      "assetSelection": null,
+      "creationTime": 1794723942.95851,
+      "endTime": 1794723963.756026,
+      "jobName": "raw_assets_job",
+      "mode": "default",
+      "parentRunId": null,
+      "rootRunId": null,
+      "runId": "00000000-0000-4000-8000-000000000007",
+      "startTime": 1794723943.322189,
+      "stats": {
+       "__typename": "RunStatsSnapshot",
+       "enqueuedTime": null,
+       "materializations": 1,
+       "stepsFailed": 0,
+       "stepsSucceeded": 2
+      },
+      "status": "SUCCESS",
+      "stepStats": [
+       {
+        "attempts": [
+         {
+          "endTime": 1794723948.209447,
+          "startTime": 1794723948.1212249
+         }
+        ],
+        "endTime": 1794723948.209447,
+        "startTime": 1794723948.1212249,
+        "status": "SUCCESS",
+        "stepKey": "raw_orders"
+       },
+       {
+        "attempts": [
+         {
+          "endTime": 1794723957.978976,
+          "startTime": 1794723957.636462
+         }
+        ],
+        "endTime": 1794723957.978976,
+        "startTime": 1794723957.636462,
+        "status": "SUCCESS",
+        "stepKey": "raw_orders_raw_orders_not_empty"
+       }
+      ],
+      "tags": [
+       {
+        "key": "dagster/schedule_name",
+        "value": "etl_job_schedule"
+       }
+      ],
+      "updateTime": 1794723963.756026
+     },
+     {
+      "assetSelection": [
+       {
+        "path": [
+         "daily_events"
+        ]
+       }
+      ],
+      "creationTime": 1794723933.195384,
+      "endTime": 1794723942.925705,
+      "jobName": "__ASSET_JOB",
+      "mode": "default",
+      "parentRunId": null,
+      "rootRunId": null,
+      "runId": "00000000-0000-4000-8000-000000000006",
+      "startTime": 1794723933.766314,
+      "stats": {
+       "__typename": "RunStatsSnapshot",
+       "enqueuedTime": null,
+       "materializations": 0,
+       "stepsFailed": 1,
+       "stepsSucceeded": 0
+      },
+      "status": "FAILURE",
+      "stepStats": [
+       {
+        "attempts": [
+         {
+          "endTime": 1794723938.366652,
+          "startTime": 1794723938.3342988
+         }
+        ],
+        "endTime": 1794723938.366652,
+        "startTime": 1794723938.3342988,
+        "status": "FAILURE",
+        "stepKey": "daily_events"
+       }
+      ],
+      "tags": [
+       {
+        "key": "dagster/failure_reason",
+        "value": "STEP_FAILURE"
+       },
+       {
+        "key": "dagster/partition",
+        "value": "2026-01-03"
+       }
+      ],
+      "updateTime": 1794723942.925705
+     },
+     {
+      "assetSelection": [
+       {
+        "path": [
+         "daily_events"
+        ]
+       }
+      ],
+      "creationTime": 1794723920.664389,
+      "endTime": 1794723933.10634,
+      "jobName": "__ASSET_JOB",
+      "mode": "default",
+      "parentRunId": null,
+      "rootRunId": null,
+      "runId": "00000000-0000-4000-8000-000000000005",
+      "startTime": 1794723920.735435,
+      "stats": {
+       "__typename": "RunStatsSnapshot",
+       "enqueuedTime": null,
+       "materializations": 1,
+       "stepsFailed": 0,
+       "stepsSucceeded": 1
+      },
+      "status": "SUCCESS",
+      "stepStats": [
+       {
+        "attempts": [
+         {
+          "endTime": 1794723926.908771,
+          "startTime": 1794723926.707896
+         }
+        ],
+        "endTime": 1794723926.908771,
+        "startTime": 1794723926.707896,
+        "status": "SUCCESS",
+        "stepKey": "daily_events"
+       }
+      ],
+      "tags": [
+       {
+        "key": "dagster/partition",
+        "value": "2026-01-02"
+       }
+      ],
+      "updateTime": 1794723933.10634
+     },
+     {
+      "assetSelection": [
+       {
+        "path": [
+         "daily_events"
+        ]
+       }
+      ],
+      "creationTime": 1794723905.405986,
+      "endTime": 1794723920.633863,
+      "jobName": "__ASSET_JOB",
+      "mode": "default",
+      "parentRunId": null,
+      "rootRunId": null,
+      "runId": "00000000-0000-4000-8000-000000000004",
+      "startTime": 1794723905.839066,
+      "stats": {
+       "__typename": "RunStatsSnapshot",
+       "enqueuedTime": null,
+       "materializations": 1,
+       "stepsFailed": 0,
+       "stepsSucceeded": 1
+      },
+      "status": "SUCCESS",
+      "stepStats": [
+       {
+        "attempts": [
+         {
+          "endTime": 1794723914.531302,
+          "startTime": 1794723914.329925
+         }
+        ],
+        "endTime": 1794723914.531302,
+        "startTime": 1794723914.329925,
+        "status": "SUCCESS",
+        "stepKey": "daily_events"
+       }
+      ],
+      "tags": [
+       {
+        "key": "dagster/partition",
+        "value": "2026-01-01"
+       }
+      ],
+      "updateTime": 1794723920.633863
+     },
+     {
+      "assetSelection": null,
+      "creationTime": 1794723889.165609,
+      "endTime": 1794723905.346669,
+      "jobName": "etl_job",
+      "mode": "default",
+      "parentRunId": null,
+      "rootRunId": null,
+      "runId": "00000000-0000-4000-8000-000000000003",
+      "startTime": 1794723889.242281,
+      "stats": {
+       "__typename": "RunStatsSnapshot",
+       "enqueuedTime": null,
+       "materializations": 0,
+       "stepsFailed": 1,
+       "stepsSucceeded": 0
+      },
+      "status": "FAILURE",
+      "stepStats": [
+       {
+        "attempts": [
+         {
+          "endTime": 1794723898.048548,
+          "startTime": 1794723898.0379379
+         }
+        ],
+        "endTime": 1794723898.048548,
+        "startTime": 1794723898.0379379,
+        "status": "FAILURE",
+        "stepKey": "extract"
+       }
+      ],
+      "tags": [
+       {
+        "key": "dagster/failure_reason",
+        "value": "STEP_FAILURE"
+       }
+      ],
+      "updateTime": 1794723905.346669
+     },
+     {
+      "assetSelection": null,
+      "creationTime": 1794723860.738882,
+      "endTime": 1794723888.937249,
+      "jobName": "etl_job",
+      "mode": "default",
+      "parentRunId": null,
+      "rootRunId": null,
+      "runId": "00000000-0000-4000-8000-000000000002",
+      "startTime": 1794723860.74897,
+      "stats": {
+       "__typename": "RunStatsSnapshot",
+       "enqueuedTime": null,
+       "materializations": 0,
+       "stepsFailed": 0,
+       "stepsSucceeded": 2
+      },
+      "status": "SUCCESS",
+      "stepStats": [
+       {
+        "attempts": [
+         {
+          "endTime": 1794723867.817166,
+          "startTime": 1794723867.799236
+         }
+        ],
+        "endTime": 1794723867.817166,
+        "startTime": 1794723867.799236,
+        "status": "SUCCESS",
+        "stepKey": "extract"
+       },
+       {
+        "attempts": [
+         {
+          "endTime": 1794723881.217192,
+          "startTime": 1794723881.144723
+         }
+        ],
+        "endTime": 1794723881.217192,
+        "startTime": 1794723881.144723,
+        "status": "SUCCESS",
+        "stepKey": "load"
+       }
+      ],
+      "tags": [
+       {
+        "key": "team",
+        "value": "data"
+       }
+      ],
+      "updateTime": 1794723888.937249
+     },
+     {
+      "assetSelection": [
+       {
+        "path": [
+         "raw_orders"
+        ]
+       },
+       {
+        "path": [
+         "customer_totals"
+        ]
+       }
+      ],
+      "creationTime": 1794723825.597287,
+      "endTime": 1794723860.69647,
+      "jobName": "__ASSET_JOB",
+      "mode": "default",
+      "parentRunId": null,
+      "rootRunId": null,
+      "runId": "00000000-0000-4000-8000-000000000001",
+      "startTime": 1794723826.025332,
+      "stats": {
+       "__typename": "RunStatsSnapshot",
+       "enqueuedTime": null,
+       "materializations": 2,
+       "stepsFailed": 0,
+       "stepsSucceeded": 4
+      },
+      "status": "SUCCESS",
+      "stepStats": [
+       {
+        "attempts": [
+         {
+          "endTime": 1794723833.28441,
+          "startTime": 1794723833.081834
+         }
+        ],
+        "endTime": 1794723833.28441,
+        "startTime": 1794723833.081834,
+        "status": "SUCCESS",
+        "stepKey": "raw_orders"
+       },
+       {
+        "attempts": [
+         {
+          "endTime": 1794723842.515831,
+          "startTime": 1794723842.416676
+         }
+        ],
+        "endTime": 1794723842.515831,
+        "startTime": 1794723842.416676,
+        "status": "SUCCESS",
+        "stepKey": "customer_totals"
+       },
+       {
+        "attempts": [
+         {
+          "endTime": 1794723847.089525,
+          "startTime": 1794723846.763
+         }
+        ],
+        "endTime": 1794723847.089525,
+        "startTime": 1794723846.763,
+        "status": "SUCCESS",
+        "stepKey": "raw_orders_raw_orders_not_empty"
+       },
+       {
+        "attempts": [
+         {
+          "endTime": 1794723855.036499,
+          "startTime": 1794723854.64626
+         }
+        ],
+        "endTime": 1794723855.036499,
+        "startTime": 1794723854.64626,
+        "status": "SUCCESS",
+        "stepKey": "customer_totals_customer_totals_has_rows"
+       }
+      ],
+      "tags": [],
+      "updateTime": 1794723860.69647
+     }
+    ]
+   }
+  }
+ },
+ "status": 200,
+ "variables": {
+  "cursor": null,
+  "filter": null,
+  "limit": 25
+ }
+}

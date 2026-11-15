@@ -1,0 +1,87 @@
+{
+ "operation": "Materializations",
+ "query": "\nquery Materializations(\n  $assetKey: AssetKeyInput!, $before: String, $after: String, $partitions: [String!], $limit: Int\n) {\n  assetOrError(assetKey: $assetKey) {\n    __typename\n    ... on Asset {\n      assetMaterializations(\n        beforeTimestampMillis: $before, afterTimestampMillis: $after, partitions: $partitions, limit: $limit\n      ) {\n        runId timestamp partition stepKey label description\n        tags { key value }\n        metadataEntries { ...MetadataFields }\n      }\n    }\n    ... on AssetNotFoundError { message }\n  }\n}\n\nfragment MetadataFields on MetadataEntry {\n  __typename\n  label\n  ... on TextMetadataEntry { text }\n  ... on IntMetadataEntry { intValue intRepr }\n  ... on FloatMetadataEntry { floatValue floatRepr }\n  ... on BoolMetadataEntry { boolValue }\n  ... on JsonMetadataEntry { jsonString }\n  ... on MarkdownMetadataEntry { mdStr }\n  ... on PathMetadataEntry { path }\n  ... on NotebookMetadataEntry { path }\n  ... on UrlMetadataEntry { url }\n  ... on TimestampMetadataEntry { timestamp }\n  ... on PipelineRunMetadataEntry { runId }\n  ... on AssetMetadataEntry { assetKey { path } }\n  ... on JobMetadataEntry { jobName }\n  ... on PoolMetadataEntry { pool }\n}\n",
+ "response": {
+  "data": {
+   "assetOrError": {
+    "__typename": "Asset",
+    "assetMaterializations": [
+     {
+      "description": null,
+      "label": "raw_orders",
+      "metadataEntries": [
+       {
+        "__typename": "IntMetadataEntry",
+        "intRepr": "42",
+        "intValue": 42,
+        "label": "row_count"
+       },
+       {
+        "__typename": "TextMetadataEntry",
+        "label": "source",
+        "text": "fixture"
+       }
+      ],
+      "partition": null,
+      "runId": "00000000-0000-4000-8000-000000000007",
+      "stepKey": "raw_orders",
+      "tags": [
+       {
+        "key": "dagster/code_version",
+        "value": "00000000-0000-4000-8000-000000000007"
+       },
+       {
+        "key": "dagster/data_version",
+        "value": "6b7be92641aec20b00f9c40280433e0afcf9a1f7a512d4cc77692b3ffc9d1cff"
+       }
+      ],
+      "timestamp": "1794723948130"
+     },
+     {
+      "description": null,
+      "label": "raw_orders",
+      "metadataEntries": [
+       {
+        "__typename": "IntMetadataEntry",
+        "intRepr": "42",
+        "intValue": 42,
+        "label": "row_count"
+       },
+       {
+        "__typename": "TextMetadataEntry",
+        "label": "source",
+        "text": "fixture"
+       }
+      ],
+      "partition": null,
+      "runId": "00000000-0000-4000-8000-000000000001",
+      "stepKey": "raw_orders",
+      "tags": [
+       {
+        "key": "dagster/code_version",
+        "value": "00000000-0000-4000-8000-000000000001"
+       },
+       {
+        "key": "dagster/data_version",
+        "value": "11e594f481958c10e3015d0bf0447a22f068a8a647f475df15ce2c7ab4b8f3f1"
+       }
+      ],
+      "timestamp": "1794723833098"
+     }
+    ]
+   }
+  }
+ },
+ "status": 200,
+ "variables": {
+  "after": null,
+  "assetKey": {
+   "path": [
+    "raw_orders"
+   ]
+  },
+  "before": null,
+  "limit": 200,
+  "partitions": null
+ }
+}

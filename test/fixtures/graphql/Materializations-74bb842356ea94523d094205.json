@@ -1,0 +1,59 @@
+{
+ "operation": "Materializations",
+ "query": "\nquery Materializations(\n  $assetKey: AssetKeyInput!, $before: String, $after: String, $partitions: [String!], $limit: Int\n) {\n  assetOrError(assetKey: $assetKey) {\n    __typename\n    ... on Asset {\n      assetMaterializations(\n        beforeTimestampMillis: $before, afterTimestampMillis: $after, partitions: $partitions, limit: $limit\n      ) {\n        runId timestamp partition stepKey label description\n        tags { key value }\n        metadataEntries { ...MetadataFields }\n      }\n    }\n    ... on AssetNotFoundError { message }\n  }\n}\n\nfragment MetadataFields on MetadataEntry {\n  __typename\n  label\n  ... on TextMetadataEntry { text }\n  ... on IntMetadataEntry { intValue intRepr }\n  ... on FloatMetadataEntry { floatValue floatRepr }\n  ... on BoolMetadataEntry { boolValue }\n  ... on JsonMetadataEntry { jsonString }\n  ... on MarkdownMetadataEntry { mdStr }\n  ... on PathMetadataEntry { path }\n  ... on NotebookMetadataEntry { path }\n  ... on UrlMetadataEntry { url }\n  ... on TimestampMetadataEntry { timestamp }\n  ... on PipelineRunMetadataEntry { runId }\n  ... on AssetMetadataEntry { assetKey { path } }\n  ... on JobMetadataEntry { jobName }\n  ... on PoolMetadataEntry { pool }\n}\n",
+ "response": {
+  "data": {
+   "assetOrError": {
+    "__typename": "Asset",
+    "assetMaterializations": [
+     {
+      "description": null,
+      "label": "customer_totals",
+      "metadataEntries": [
+       {
+        "__typename": "IntMetadataEntry",
+        "intRepr": "7",
+        "intValue": 7,
+        "label": "row_count"
+       }
+      ],
+      "partition": null,
+      "runId": "00000000-0000-4000-8000-000000000001",
+      "stepKey": "customer_totals",
+      "tags": [
+       {
+        "key": "dagster/code_version",
+        "value": "00000000-0000-4000-8000-000000000001"
+       },
+       {
+        "key": "dagster/data_version",
+        "value": "a43e88c9a3718ae46bbe0489aa3ee286e6bc3aaa6d4a961f16cebbf2769be046"
+       },
+       {
+        "key": "dagster/input_data_version/raw_orders",
+        "value": "11e594f481958c10e3015d0bf0447a22f068a8a647f475df15ce2c7ab4b8f3f1"
+       },
+       {
+        "key": "dagster/input_event_pointer/raw_orders",
+        "value": "6"
+       }
+      ],
+      "timestamp": "1794723842505"
+     }
+    ]
+   }
+  }
+ },
+ "status": 200,
+ "variables": {
+  "after": null,
+  "assetKey": {
+   "path": [
+    "customer_totals"
+   ]
+  },
+  "before": null,
+  "limit": 200,
+  "partitions": null
+ }
+}

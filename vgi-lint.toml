@@ -1,0 +1,26 @@
+# vgi-lint settings for this worker: https://github.com/Query-farm/vgi-lint-check
+# `make lint-explain`, `vgi-lint lint` in this directory, and CI's metadata job all
+# read this file. Look up a rule with `vgi-lint explain VGI123`; print the metadata tag
+# contract with `vgi-lint spec`.
+
+# The worker to attach, relative to this directory. Build it first with `make build`.
+location = ".venv/bin/vgi-dagster-worker"
+
+# Publication bar: zero findings, info included.
+fail_on = "info"
+
+# Waive a finding only with a kind and a reason, so the waiver can be audited:
+#   domain-exemption  permanent and legitimate for this worker
+#   deferred          a real defect you will fix; add expires = "YYYY-MM-DD"
+#   timing            slow or flaky because of the environment, not the metadata
+#   tooling-bug       the linter is wrong; report it upstream
+ignore = [
+  { code = "VGI807", kind = "domain-exemption", reason = "asset_materializations has no natural key: Dagster's materialization events carry no id, and asset/run/partition/step can repeat (runless events have an empty run id)" },
+  { code = "VGI808", kind = "tooling-bug", reason = "self-references (runs.run_id in runs, jobs.job_id in jobs, ...) that the rule's singular/plural check misses; the cross-table run_id references cannot be attested ENFORCED (runless asset events carry an empty run id, deleted runs leave history), and vgi-python accepts only ENFORCED constraint records" },
+  { code = "VGI809", kind = "domain-exemption", reason = "step_key in asset_materializations and asset_check_executions is a per-run step name, not a shared entity with its own table" },
+]
+
+# Adopting the gate on a worker that already has findings? Record them once with
+#   vgi-lint lint --baseline vgi-lint-baseline --update-baseline
+# and uncomment the next line. Only new findings fail after that.
+# baseline = "vgi-lint-baseline"

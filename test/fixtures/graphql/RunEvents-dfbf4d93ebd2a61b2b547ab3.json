@@ -1,0 +1,147 @@
+{
+ "operation": "RunEvents",
+ "query": "\nquery RunEvents($runId: ID!, $afterCursor: String, $limit: Int) {\n  logsForRun(runId: $runId, afterCursor: $afterCursor, limit: $limit) {\n    __typename\n    ... on EventConnection {\n      cursor\n      hasMore\n      events {\n        __typename\n        ... on MessageEvent { runId timestamp level message stepKey eventType }\n        ... on ExecutionStepFailureEvent { error { ...ErrorFields } }\n        ... on RunFailureEvent { error { ...ErrorFields } }\n      }\n    }\n    ... on RunNotFoundError { message }\n    ... on PythonError { message }\n  }\n}\nfragment ErrorFields on PythonError {\n  message className cause { message className cause { message className cause { message className } } }\n}\n",
+ "response": {
+  "data": {
+   "logsForRun": {
+    "__typename": "EventConnection",
+    "cursor": "eyJ0eXBlIjogIlNUT1JBR0VfSUQiLCAidmFsdWUiOiAxMn0=",
+    "events": [
+     {
+      "__typename": "RunStartEvent",
+      "eventType": "RUN_START",
+      "level": "DEBUG",
+      "message": "Started execution of run for \"etl_job\".",
+      "runId": "00000000-0000-4000-8000-000000000003",
+      "stepKey": null,
+      "timestamp": "1794723889242"
+     },
+     {
+      "__typename": "EngineEvent",
+      "eventType": "ENGINE_EVENT",
+      "level": "DEBUG",
+      "message": "Executing steps using multiprocess executor: parent process (pid: 38523)",
+      "runId": "00000000-0000-4000-8000-000000000003",
+      "stepKey": null,
+      "timestamp": "1794723889557"
+     },
+     {
+      "__typename": "StepWorkerStartingEvent",
+      "eventType": "STEP_WORKER_STARTING",
+      "level": "DEBUG",
+      "message": "Launching subprocess for \"extract\".",
+      "runId": "00000000-0000-4000-8000-000000000003",
+      "stepKey": "extract",
+      "timestamp": "1794723889559"
+     },
+     {
+      "__typename": "StepWorkerStartedEvent",
+      "eventType": "STEP_WORKER_STARTED",
+      "level": "DEBUG",
+      "message": "Executing step \"extract\" in subprocess.",
+      "runId": "00000000-0000-4000-8000-000000000003",
+      "stepKey": "extract",
+      "timestamp": "1794723896855"
+     },
+     {
+      "__typename": "ResourceInitStartedEvent",
+      "eventType": "RESOURCE_INIT_STARTED",
+      "level": "DEBUG",
+      "message": "Starting initialization of resources [io_manager].",
+      "runId": "00000000-0000-4000-8000-000000000003",
+      "stepKey": "extract",
+      "timestamp": "1794723897494"
+     },
+     {
+      "__typename": "ResourceInitSuccessEvent",
+      "eventType": "RESOURCE_INIT_SUCCESS",
+      "level": "DEBUG",
+      "message": "Finished initialization of resources [io_manager].",
+      "runId": "00000000-0000-4000-8000-000000000003",
+      "stepKey": "extract",
+      "timestamp": "1794723897501"
+     },
+     {
+      "__typename": "LogsCapturedEvent",
+      "eventType": "LOGS_CAPTURED",
+      "level": "DEBUG",
+      "message": "Capturing logs for process (pid: 42825).",
+      "runId": "00000000-0000-4000-8000-000000000003",
+      "stepKey": null,
+      "timestamp": "1794723898031"
+     },
+     {
+      "__typename": "ExecutionStepStartEvent",
+      "eventType": "STEP_START",
+      "level": "DEBUG",
+      "message": "Started execution of step \"extract\".",
+      "runId": "00000000-0000-4000-8000-000000000003",
+      "stepKey": "extract",
+      "timestamp": "1794723898037"
+     },
+     {
+      "__typename": "ExecutionStepFailureEvent",
+      "error": {
+       "cause": {
+        "cause": null,
+        "className": "RuntimeError",
+        "message": "RuntimeError: extract was told to fail\n"
+       },
+       "className": "DagsterExecutionStepExecutionError",
+       "message": "dagster._core.errors.DagsterExecutionStepExecutionError: Error occurred while executing op \"extract\":\n"
+      },
+      "eventType": "STEP_FAILURE",
+      "level": "ERROR",
+      "message": "Execution of step \"extract\" failed.",
+      "runId": "00000000-0000-4000-8000-000000000003",
+      "stepKey": "extract",
+      "timestamp": "1794723898048"
+     },
+     {
+      "__typename": "LogMessageEvent",
+      "eventType": null,
+      "level": "ERROR",
+      "message": "Dependencies for step load failed: ['extract']. Not executing.",
+      "runId": "00000000-0000-4000-8000-000000000003",
+      "stepKey": "load",
+      "timestamp": "1794723898061"
+     },
+     {
+      "__typename": "EngineEvent",
+      "eventType": "ENGINE_EVENT",
+      "level": "DEBUG",
+      "message": "Multiprocess executor: parent process exiting after 15.77s (pid: 38523)",
+      "runId": "00000000-0000-4000-8000-000000000003",
+      "stepKey": null,
+      "timestamp": "1794723905328"
+     },
+     {
+      "__typename": "RunFailureEvent",
+      "error": {
+       "cause": {
+        "cause": null,
+        "className": "RuntimeError",
+        "message": "RuntimeError: extract was told to fail\n"
+       },
+       "className": "DagsterExecutionStepExecutionError",
+       "message": "dagster._core.errors.DagsterExecutionStepExecutionError: Error occurred while executing op \"extract\":\n"
+      },
+      "eventType": "RUN_FAILURE",
+      "level": "ERROR",
+      "message": "Execution of run for \"etl_job\" failed. Steps failed: ['extract'].",
+      "runId": "00000000-0000-4000-8000-000000000003",
+      "stepKey": null,
+      "timestamp": "1794723905346"
+     }
+    ],
+    "hasMore": false
+   }
+  }
+ },
+ "status": 200,
+ "variables": {
+  "afterCursor": null,
+  "limit": 500,
+  "runId": "00000000-0000-4000-8000-000000000003"
+ }
+}

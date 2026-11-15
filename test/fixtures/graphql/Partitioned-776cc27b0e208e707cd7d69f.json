@@ -1,0 +1,38 @@
+{
+ "operation": "Partitioned",
+ "query": "\nquery Partitioned($assetKeys: [AssetKeyInput!]) {\n  assetNodes(assetKeys: $assetKeys) { assetKey { path } isPartitioned }\n}\n",
+ "response": {
+  "data": {
+   "assetNodes": [
+    {
+     "assetKey": {
+      "path": [
+       "customer_totals"
+      ]
+     },
+     "isPartitioned": false
+    },
+    {
+     "assetKey": {
+      "path": [
+       "daily_events"
+      ]
+     },
+     "isPartitioned": true
+    },
+    {
+     "assetKey": {
+      "path": [
+       "raw_orders"
+      ]
+     },
+     "isPartitioned": false
+    }
+   ]
+  }
+ },
+ "status": 200,
+ "variables": {
+  "assetKeys": null
+ }
+}

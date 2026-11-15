@@ -1,0 +1,299 @@
+# name: test/sql/dagster.test
+# description: The dagster catalog against recorded GraphQL from a seeded open-source dagster-webserver
+# group: [dagster]
+#
+# test/mock_api/server.py replays test/fixtures/graphql (recorded by `make fixture-record`
+# from scripts/dagster_fixture.sh). Assertions use only facts fixed by
+# test/dagster_project/{definitions,seed}.py, never timestamps, so a re-record keeps them true.
+
+require vgi
+
+require-env DAGSTER_WORKER
+
+require-env DAGSTER_MOCK_API
+
+# metadata is JSON text; ->> needs the json extension (the harness installs it).
+statement ok
+LOAD json;
+
+statement ok
+ATTACH 'dagster' (TYPE vgi, LOCATION '{DAGSTER_WORKER}');
+
+# ------------------------------------------------------------------ configuration
+
+# Without a dagster secret every table explains how to create one.
+statement error
+SELECT count(*) FROM dagster.main.runs;
+----
+<REGEX>:.*no dagster secret found.*
+
+# The status mapping needs no Dagster connection; NULL and unknown values give NULL.
+query TT
+SELECT s, dagster.main.unified_run_status(s) FROM (VALUES ('FAILURE'), ('CANCELED'), ('STARTING'), ('started'), ('bogus'), (NULL)) t(s) ORDER BY s NULLS LAST;
+----
+CANCELED	cancelled
+FAILURE	failed
+STARTING	queued
+bogus	NULL
+started	running
+NULL	NULL
+
+query I
+SELECT count(*) FROM (SELECT dagster.main.unified_run_status('SUCCESS') FROM range(5000));
+----
+5000
+
+statement ok
+CREATE SECRET dagster_fixture (TYPE dagster, BASE_URL '{DAGSTER_MOCK_API}/');
+
+# ------------------------------------------------------------------ definitions
+
+query TTT
+SELECT location_name, load_status, error_message FROM dagster.main.code_locations;
+----
+definitions.py	LOADED	NULL
+
+query TIIII
+SELECT repository_name, job_count, schedule_count, sensor_count, len(asset_groups) FROM dagster.main.repositories;
+----
+__repository__	3	1	1	2
+
+query TTTT
+SELECT job_name, is_asset_job, tags['team'], schedule_names FROM dagster.main.jobs ORDER BY job_name;
+----
+__ASSET_JOB	true	NULL	[]
+etl_job	false	data	[etl_job_schedule]
+raw_assets_job	true	NULL	[]
+
+query TTTTTT
+SELECT schedule_name, job_name, cron_schedule, execution_timezone, status, default_status FROM dagster.main.schedules;
+----
+etl_job_schedule	etl_job	0 6 * * *	UTC	STOPPED	STOPPED
+
+query TTTIT
+SELECT sensor_name, sensor_type, status, min_interval_seconds, target_jobs FROM dagster.main.sensors;
+----
+noop_sensor	STANDARD	STOPPED	30	[etl_job]
+
+# Resource config values are never returned, only keys and env-var names.
+query TTTT
+SELECT resource_name, resource_type, config_keys, jobs_using FROM dagster.main.resources;
+----
+greeter	definitions.GreetingResource	[greeting]	[etl_job]
+
+query I
+SELECT count(*) FROM dagster.main.concurrency_keys;
+----
+0
+
+# open-source dagster-webserver has no deployments
+statement error
+SELECT * FROM dagster.main.deployments;
+----
+<REGEX>:.*needs Dagster\+.*
+
+# ------------------------------------------------------------------ runs
+
+query TTTT
+SELECT run_id, job_name, status, trigger FROM dagster.main.runs ORDER BY run_id;
+----
+00000000-0000-4000-8000-000000000001	__ASSET_JOB	SUCCESS	NULL
+00000000-0000-4000-8000-000000000002	etl_job	SUCCESS	NULL
+00000000-0000-4000-8000-000000000003	etl_job	FAILURE	NULL
+00000000-0000-4000-8000-000000000004	__ASSET_JOB	SUCCESS	NULL
+00000000-0000-4000-8000-000000000005	__ASSET_JOB	SUCCESS	NULL
+00000000-0000-4000-8000-000000000006	__ASSET_JOB	FAILURE	NULL
+00000000-0000-4000-8000-000000000007	raw_assets_job	SUCCESS	schedule
+
+# Newest first, as Dagster returns them.
+query T
+SELECT run_id FROM dagster.main.runs LIMIT 1;
+----
+00000000-0000-4000-8000-000000000007
+
+# Pushed down as RunsFilter.runIds / statuses / pipelineName / createdAfter.
+query TT
+SELECT job_name, status FROM dagster.main.runs WHERE run_id = '00000000-0000-4000-8000-000000000003';
+----
+etl_job	FAILURE
+
+query I
+SELECT count(*) FROM dagster.main.runs WHERE run_id IN ('00000000-0000-4000-8000-000000000002', '00000000-0000-4000-8000-000000000006');
+----
+2
+
+query T
+SELECT run_id FROM dagster.main.runs WHERE status = 'FAILURE' AND job_name = 'etl_job';
+----
+00000000-0000-4000-8000-000000000003
+
+query I
+SELECT count(*) FROM dagster.main.runs WHERE status IN ('SUCCESS', 'CANCELED') AND created_at >= TIMESTAMPTZ '2026-01-01 00:00:00+00';
+----
+5
+
+# A filter no run can satisfy never reaches Dagster.
+query I
+SELECT count(*) FROM dagster.main.runs WHERE status = 'NOT_A_STATUS';
+----
+0
+
+query TIIIT
+SELECT tags['team'], steps_succeeded, steps_failed, materializations, asset_selection FROM dagster.main.runs WHERE run_id = '00000000-0000-4000-8000-000000000002';
+----
+data	2	0	0	NULL
+
+query TT
+SELECT url LIKE 'http://127.0.0.1:%/runs/00000000-0000-4000-8000-000000000001', duration_seconds >= 0 FROM dagster.main.runs WHERE run_id = '00000000-0000-4000-8000-000000000001';
+----
+true	true
+
+query TTT
+SELECT tags['dagster/partition'], asset_selection, status FROM dagster.main.runs WHERE run_id = '00000000-0000-4000-8000-000000000006';
+----
+2026-01-03	[daily_events]	FAILURE
+
+# ------------------------------------------------------------------ run functions
+
+query TT
+SELECT job_name, status FROM dagster.main.run('00000000-0000-4000-8000-000000000003');
+----
+etl_job	FAILURE
+
+query I
+SELECT count(*) FROM dagster.main.run('00000000-0000-4000-8000-0000000000ff');
+----
+0
+
+query TTI
+SELECT step_key, status, attempt_count FROM dagster.main.run_step_stats('00000000-0000-4000-8000-000000000003') ORDER BY step_key;
+----
+extract	FAILURE	1
+
+query TTT
+SELECT step_key, error_class, error_message FROM dagster.main.run_events('00000000-0000-4000-8000-000000000003') WHERE event_type = 'STEP_FAILURE';
+----
+extract	RuntimeError	RuntimeError: extract was told to fail
+
+query IT
+SELECT count(*) > 5, bool_and(event_index >= 0) FROM dagster.main.run_events('00000000-0000-4000-8000-000000000003');
+----
+1	true
+
+query I
+SELECT count(*) FROM dagster.main.run_events('00000000-0000-4000-8000-0000000000ff');
+----
+0
+
+# ------------------------------------------------------------------ unified
+
+query TII
+SELECT status, count(*), count(DISTINCT orchestrator) FROM dagster.unified.runs GROUP BY status ORDER BY status;
+----
+failed	2	1
+success	5	1
+
+query TTTT
+SELECT orchestrator, pipeline, raw_status, trigger FROM dagster.unified.runs WHERE run_id = '00000000-0000-4000-8000-000000000007';
+----
+dagster	raw_assets_job	SUCCESS	schedule
+
+# status filters are mapped back onto Dagster RunStatus values and pushed down.
+query T
+SELECT run_id FROM dagster.unified.runs WHERE status = 'failed' AND pipeline = 'etl_job';
+----
+00000000-0000-4000-8000-000000000003
+
+query TTTTI
+SELECT task_run_id, task_name, status, raw_status, attempt FROM dagster.unified.task_runs WHERE run_id = '00000000-0000-4000-8000-000000000002' ORDER BY task_name;
+----
+00000000-0000-4000-8000-000000000002:extract	extract	success	SUCCESS	1
+00000000-0000-4000-8000-000000000002:load	load	success	SUCCESS	1
+
+query TI
+SELECT status, count(*) FROM dagster.unified.task_runs GROUP BY status ORDER BY status;
+----
+failed	2
+success	10
+
+# The shared shape: both unified tables UNION ALL with other orchestrators' tables.
+query I
+SELECT count(*) FROM (SELECT * FROM dagster.unified.runs UNION ALL SELECT * FROM dagster.unified.runs);
+----
+14
+
+# ------------------------------------------------------------------ assets
+
+query TTTTTTT
+SELECT asset_key, group_name, dependency_keys, depended_by_keys, kinds, is_partitioned, has_asset_checks FROM dagster.main.assets ORDER BY asset_key;
+----
+customer_totals	analytics	[raw_orders]	[]	[]	false	true
+daily_events	raw	[]	[]	[]	true	false
+raw_orders	raw	[]	[customer_totals]	[python]	false	true
+
+query TIII
+SELECT asset_key, partition_count, materialized_partition_count, failed_partition_count FROM dagster.main.assets WHERE asset_key = 'daily_events';
+----
+daily_events	7	2	1
+
+query TT
+SELECT asset_key, last_materialization_run_id FROM dagster.main.assets WHERE asset_key IN ('raw_orders', 'customer_totals') ORDER BY asset_key;
+----
+customer_totals	00000000-0000-4000-8000-000000000001
+raw_orders	00000000-0000-4000-8000-000000000007
+
+query TI
+SELECT asset_key, count(*) FROM dagster.main.asset_materializations GROUP BY asset_key ORDER BY asset_key;
+----
+customer_totals	1
+daily_events	2
+raw_orders	2
+
+# asset_key, partition and materialized_at filters are pushed down.
+query TT
+SELECT partition, run_id FROM dagster.main.asset_materializations WHERE asset_key = 'daily_events' AND partition IN ('2026-01-02', '2026-01-05');
+----
+2026-01-02	00000000-0000-4000-8000-000000000005
+
+query IT
+SELECT CAST(metadata->>'row_count' AS INTEGER), metadata->>'source' FROM dagster.main.asset_materializations WHERE asset_key = 'raw_orders' AND materialized_at > TIMESTAMPTZ '2026-01-01 00:00:00+00' ORDER BY run_id LIMIT 1;
+----
+42	fixture
+
+query I
+SELECT count(*) FROM dagster.main.asset_materializations WHERE asset_key = 'raw_orders' AND materialized_at < TIMESTAMPTZ '2020-01-01 00:00:00+00';
+----
+0
+
+query TTTTT
+SELECT asset_key, check_name, latest_status, latest_passed, latest_severity FROM dagster.main.asset_checks ORDER BY asset_key;
+----
+customer_totals	customer_totals_has_rows	FAILED	false	WARN
+raw_orders	raw_orders_not_empty	SUCCEEDED	true	ERROR
+
+query TTIT
+SELECT asset_key, check_name, count(*), string_agg(DISTINCT status, ',') FROM dagster.main.asset_check_executions GROUP BY ALL ORDER BY asset_key;
+----
+customer_totals	customer_totals_has_rows	1	FAILED
+raw_orders	raw_orders_not_empty	2	SUCCEEDED
+
+query T
+SELECT metadata FROM dagster.main.asset_check_executions WHERE check_name = 'customer_totals_has_rows';
+----
+{"row_count": 7}
+
+query TIT
+SELECT partition_key, partition_index, status FROM dagster.main.asset_partitions ORDER BY partition_index;
+----
+2026-01-01	0	MATERIALIZED
+2026-01-02	1	MATERIALIZED
+2026-01-03	2	FAILED
+2026-01-04	3	MISSING
+2026-01-05	4	MISSING
+2026-01-06	5	MISSING
+2026-01-07	6	MISSING
+
+query I
+SELECT count(*) FROM dagster.main.asset_partitions WHERE asset_key = 'raw_orders';
+----
+0

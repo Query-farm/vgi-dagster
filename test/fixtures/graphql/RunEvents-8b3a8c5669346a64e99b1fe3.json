@@ -1,0 +1,18 @@
+{
+ "operation": "RunEvents",
+ "query": "\nquery RunEvents($runId: ID!, $afterCursor: String, $limit: Int) {\n  logsForRun(runId: $runId, afterCursor: $afterCursor, limit: $limit) {\n    __typename\n    ... on EventConnection {\n      cursor\n      hasMore\n      events {\n        __typename\n        ... on MessageEvent { runId timestamp level message stepKey eventType }\n        ... on ExecutionStepFailureEvent { error { ...ErrorFields } }\n        ... on RunFailureEvent { error { ...ErrorFields } }\n      }\n    }\n    ... on RunNotFoundError { message }\n    ... on PythonError { message }\n  }\n}\nfragment ErrorFields on PythonError {\n  message className cause { message className cause { message className cause { message className } } }\n}\n",
+ "response": {
+  "data": {
+   "logsForRun": {
+    "__typename": "RunNotFoundError",
+    "message": "Pipeline run 00000000-0000-4000-8000-0000000000ff could not be found."
+   }
+  }
+ },
+ "status": 200,
+ "variables": {
+  "afterCursor": null,
+  "limit": 500,
+  "runId": "00000000-0000-4000-8000-0000000000ff"
+ }
+}

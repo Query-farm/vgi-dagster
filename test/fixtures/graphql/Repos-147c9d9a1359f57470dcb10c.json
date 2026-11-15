@@ -1,0 +1,43 @@
+{
+ "operation": "Repos",
+ "query": "query Repos { repositoriesOrError { __typename ... on RepositoryConnection { nodes { name location { name } allTopLevelResourceDetails { name resourceType description configuredValues { key type value } assetKeysUsing { path } jobsOpsUsing { jobName } schedulesUsing sensorsUsing } } } ... on PythonError { message } } }",
+ "response": {
+  "data": {
+   "repositoriesOrError": {
+    "__typename": "RepositoryConnection",
+    "nodes": [
+     {
+      "allTopLevelResourceDetails": [
+       {
+        "assetKeysUsing": [],
+        "configuredValues": [
+         {
+          "key": "greeting",
+          "type": "VALUE",
+          "value": "\"hello\""
+         }
+        ],
+        "description": "A trivial configurable resource, so the resources table has a row.",
+        "jobsOpsUsing": [
+         {
+          "jobName": "etl_job"
+         }
+        ],
+        "name": "greeter",
+        "resourceType": "definitions.GreetingResource",
+        "schedulesUsing": [],
+        "sensorsUsing": []
+       }
+      ],
+      "location": {
+       "name": "definitions.py"
+      },
+      "name": "__repository__"
+     }
+    ]
+   }
+  }
+ },
+ "status": 200,
+ "variables": {}
+}

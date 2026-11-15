@@ -1,0 +1,42 @@
+{
+ "operation": "CheckExecutions",
+ "query": "\nquery CheckExecutions($assetKey: AssetKeyInput!, $checkName: String!, $limit: Int!, $cursor: String) {\n  assetCheckExecutions(assetKey: $assetKey, checkName: $checkName, limit: $limit, cursor: $cursor) {\n    id runId status timestamp partition stepKey\n    evaluation { severity success description metadataEntries { ...MetadataFields } }\n  }\n}\n\nfragment MetadataFields on MetadataEntry {\n  __typename\n  label\n  ... on TextMetadataEntry { text }\n  ... on IntMetadataEntry { intValue intRepr }\n  ... on FloatMetadataEntry { floatValue floatRepr }\n  ... on BoolMetadataEntry { boolValue }\n  ... on JsonMetadataEntry { jsonString }\n  ... on MarkdownMetadataEntry { mdStr }\n  ... on PathMetadataEntry { path }\n  ... on NotebookMetadataEntry { path }\n  ... on UrlMetadataEntry { url }\n  ... on TimestampMetadataEntry { timestamp }\n  ... on PipelineRunMetadataEntry { runId }\n  ... on AssetMetadataEntry { assetKey { path } }\n  ... on JobMetadataEntry { jobName }\n  ... on PoolMetadataEntry { pool }\n}\n",
+ "response": {
+  "data": {
+   "assetCheckExecutions": [
+    {
+     "evaluation": {
+      "description": null,
+      "metadataEntries": [
+       {
+        "__typename": "IntMetadataEntry",
+        "intRepr": "7",
+        "intValue": 7,
+        "label": "row_count"
+       }
+      ],
+      "severity": "WARN",
+      "success": false
+     },
+     "id": "1",
+     "partition": null,
+     "runId": "00000000-0000-4000-8000-000000000001",
+     "status": "FAILED",
+     "stepKey": "customer_totals_customer_totals_has_rows",
+     "timestamp": 1794723826.0
+    }
+   ]
+  }
+ },
+ "status": 200,
+ "variables": {
+  "assetKey": {
+   "path": [
+    "customer_totals"
+   ]
+  },
+  "checkName": "customer_totals_has_rows",
+  "cursor": null,
+  "limit": 200
+ }
+}

@@ -1,0 +1,115 @@
+{
+ "operation": "Assets",
+ "query": "\nquery Assets($assetKeys: [AssetKeyInput!]) {\n  assetNodes(assetKeys: $assetKeys, loadMaterializations: true) {\n    assetKey { path }\n    groupName description computeKind kinds\n    isPartitioned isMaterializable isObservable hasAssetChecks\n    jobNames\n    dependencyKeys { path }\n    dependedByKeys { path }\n    owners { __typename ... on UserAssetOwner { email } ... on TeamAssetOwner { team } }\n    tags { key value }\n    repository { name location { name } }\n    partitionStats { numMaterialized numPartitions numFailed numMaterializing }\n    assetMaterializations(limit: 1) { timestamp runId }\n  }\n}\n",
+ "response": {
+  "data": {
+   "assetNodes": [
+    {
+     "assetKey": {
+      "path": [
+       "customer_totals"
+      ]
+     },
+     "assetMaterializations": [
+      {
+       "runId": "00000000-0000-4000-8000-000000000001",
+       "timestamp": "1794723842505"
+      }
+     ],
+     "computeKind": null,
+     "dependedByKeys": [],
+     "dependencyKeys": [
+      {
+       "path": [
+        "raw_orders"
+       ]
+      }
+     ],
+     "description": "Orders aggregated per customer.",
+     "groupName": "analytics",
+     "hasAssetChecks": true,
+     "isMaterializable": true,
+     "isObservable": false,
+     "isPartitioned": false,
+     "jobNames": [
+      "__ASSET_JOB"
+     ],
+     "kinds": [],
+     "owners": [],
+     "partitionStats": null,
+     "repository": {
+      "location": {
+       "name": "definitions.py"
+      },
+      "name": "__repository__"
+     },
+     "tags": []
+    },
+    {
+     "assetKey": {
+      "path": [
+       "raw_orders"
+      ]
+     },
+     "assetMaterializations": [
+      {
+       "runId": "00000000-0000-4000-8000-000000000007",
+       "timestamp": "1794723948130"
+      }
+     ],
+     "computeKind": null,
+     "dependedByKeys": [
+      {
+       "path": [
+        "customer_totals"
+       ]
+      }
+     ],
+     "dependencyKeys": [],
+     "description": "Raw orders pulled from the source system.",
+     "groupName": "raw",
+     "hasAssetChecks": true,
+     "isMaterializable": true,
+     "isObservable": false,
+     "isPartitioned": false,
+     "jobNames": [
+      "__ASSET_JOB",
+      "raw_assets_job"
+     ],
+     "kinds": [
+      "python"
+     ],
+     "owners": [],
+     "partitionStats": null,
+     "repository": {
+      "location": {
+       "name": "definitions.py"
+      },
+      "name": "__repository__"
+     },
+     "tags": [
+      {
+       "key": "dagster/kind/python",
+       "value": ""
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "status": 200,
+ "variables": {
+  "assetKeys": [
+   {
+    "path": [
+     "customer_totals"
+    ]
+   },
+   {
+    "path": [
+     "raw_orders"
+    ]
+   }
+  ]
+ }
+}

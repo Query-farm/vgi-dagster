@@ -1,0 +1,16 @@
+{
+ "operation": "Run",
+ "query": "query Run($runId: ID!) { runOrError(runId: $runId) { __typename ... on Run { \n  runId status jobName mode creationTime startTime endTime updateTime rootRunId parentRunId\n  tags { key value }\n  assetSelection { path }\n  stats { __typename ... on RunStatsSnapshot { stepsSucceeded stepsFailed materializations enqueuedTime } }\nstepStats { stepKey status startTime endTime attempts { startTime endTime } } } ... on RunNotFoundError { message } ... on PythonError { message } } }",
+ "response": {
+  "data": {
+   "runOrError": {
+    "__typename": "RunNotFoundError",
+    "message": "Pipeline run 00000000-0000-4000-8000-0000000000ff could not be found."
+   }
+  }
+ },
+ "status": 200,
+ "variables": {
+  "runId": "00000000-0000-4000-8000-0000000000ff"
+ }
+}

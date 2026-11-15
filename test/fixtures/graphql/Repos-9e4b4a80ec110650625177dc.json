@@ -1,0 +1,36 @@
+{
+ "operation": "Repos",
+ "query": "query Repos { repositoriesOrError { __typename ... on RepositoryConnection { nodes { name location { name } schedules { id name cronSchedule executionTimezone pipelineName description defaultStatus scheduleState { status nextTick { timestamp } } } } } ... on PythonError { message } } }",
+ "response": {
+  "data": {
+   "repositoriesOrError": {
+    "__typename": "RepositoryConnection",
+    "nodes": [
+     {
+      "location": {
+       "name": "definitions.py"
+      },
+      "name": "__repository__",
+      "schedules": [
+       {
+        "cronSchedule": "0 6 * * *",
+        "defaultStatus": "STOPPED",
+        "description": "Daily ETL at 06:00 UTC.",
+        "executionTimezone": "UTC",
+        "id": "3a4b13947539b3486da14b0821763c90e20434f9::d7462717f5f064224e2202dc946b224117ec16a2",
+        "name": "etl_job_schedule",
+        "pipelineName": "etl_job",
+        "scheduleState": {
+         "nextTick": null,
+         "status": "STOPPED"
+        }
+       }
+      ]
+     }
+    ]
+   }
+  }
+ },
+ "status": 200,
+ "variables": {}
+}

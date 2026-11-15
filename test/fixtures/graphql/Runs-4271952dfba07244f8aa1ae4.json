@@ -1,0 +1,55 @@
+{
+ "operation": "Runs",
+ "query": "query Runs($filter: RunsFilter, $cursor: String, $limit: Int!) { runsOrError(filter: $filter, cursor: $cursor, limit: $limit) { __typename ... on Runs { results { \n  runId status jobName mode creationTime startTime endTime updateTime rootRunId parentRunId\n  tags { key value }\n  assetSelection { path }\n  stats { __typename ... on RunStatsSnapshot { stepsSucceeded stepsFailed materializations enqueuedTime } }\n } } ... on InvalidPipelineRunsFilterError { message } ... on PythonError { message } } }",
+ "response": {
+  "data": {
+   "runsOrError": {
+    "__typename": "Runs",
+    "results": [
+     {
+      "assetSelection": [
+       {
+        "path": [
+         "raw_orders"
+        ]
+       },
+       {
+        "path": [
+         "customer_totals"
+        ]
+       }
+      ],
+      "creationTime": 1794723825.597287,
+      "endTime": 1794723860.69647,
+      "jobName": "__ASSET_JOB",
+      "mode": "default",
+      "parentRunId": null,
+      "rootRunId": null,
+      "runId": "00000000-0000-4000-8000-000000000001",
+      "startTime": 1794723826.025332,
+      "stats": {
+       "__typename": "RunStatsSnapshot",
+       "enqueuedTime": null,
+       "materializations": 2,
+       "stepsFailed": 0,
+       "stepsSucceeded": 4
+      },
+      "status": "SUCCESS",
+      "tags": [],
+      "updateTime": 1794723860.69647
+     }
+    ]
+   }
+  }
+ },
+ "status": 200,
+ "variables": {
+  "cursor": null,
+  "filter": {
+   "runIds": [
+    "00000000-0000-4000-8000-000000000001"
+   ]
+  },
+  "limit": 100
+ }
+}

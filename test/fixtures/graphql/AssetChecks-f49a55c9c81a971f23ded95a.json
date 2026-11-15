@@ -1,0 +1,95 @@
+{
+ "operation": "AssetChecks",
+ "query": "\nquery AssetChecks($assetKeys: [AssetKeyInput!]) {\n  assetNodes(assetKeys: $assetKeys) {\n    assetKey { path }\n    hasAssetChecks\n    assetChecksOrError {\n      __typename\n      ... on AssetChecks {\n        checks {\n          name description blocking jobNames canExecuteIndividually\n          executionForLatestMaterialization {\n            id runId status timestamp partition\n            evaluation { severity success description }\n          }\n        }\n      }\n      ... on AssetCheckNeedsMigrationError { message }\n      ... on AssetCheckNeedsUserCodeUpgrade { message }\n      ... on AssetCheckNeedsAgentUpgradeError { message }\n    }\n  }\n}\n",
+ "response": {
+  "data": {
+   "assetNodes": [
+    {
+     "assetChecksOrError": {
+      "__typename": "AssetChecks",
+      "checks": [
+       {
+        "blocking": false,
+        "canExecuteIndividually": "CAN_EXECUTE",
+        "description": "Row count must exceed 100 (it never does).",
+        "executionForLatestMaterialization": {
+         "evaluation": {
+          "description": null,
+          "severity": "WARN",
+          "success": false
+         },
+         "id": "1",
+         "partition": null,
+         "runId": "00000000-0000-4000-8000-000000000001",
+         "status": "FAILED",
+         "timestamp": 1794723826.0
+        },
+        "jobNames": [
+         "__ASSET_JOB"
+        ],
+        "name": "customer_totals_has_rows"
+       }
+      ]
+     },
+     "assetKey": {
+      "path": [
+       "customer_totals"
+      ]
+     },
+     "hasAssetChecks": true
+    },
+    {
+     "assetChecksOrError": {
+      "__typename": "AssetChecks",
+      "checks": []
+     },
+     "assetKey": {
+      "path": [
+       "daily_events"
+      ]
+     },
+     "hasAssetChecks": false
+    },
+    {
+     "assetChecksOrError": {
+      "__typename": "AssetChecks",
+      "checks": [
+       {
+        "blocking": false,
+        "canExecuteIndividually": "CAN_EXECUTE",
+        "description": "Raw orders are never empty.",
+        "executionForLatestMaterialization": {
+         "evaluation": {
+          "description": null,
+          "severity": "ERROR",
+          "success": true
+         },
+         "id": "3",
+         "partition": null,
+         "runId": "00000000-0000-4000-8000-000000000007",
+         "status": "SUCCEEDED",
+         "timestamp": 1794723943.0
+        },
+        "jobNames": [
+         "__ASSET_JOB",
+         "raw_assets_job"
+        ],
+        "name": "raw_orders_not_empty"
+       }
+      ]
+     },
+     "assetKey": {
+      "path": [
+       "raw_orders"
+      ]
+     },
+     "hasAssetChecks": true
+    }
+   ]
+  }
+ },
+ "status": 200,
+ "variables": {
+  "assetKeys": null
+ }
+}

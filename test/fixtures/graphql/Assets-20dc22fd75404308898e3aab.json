@@ -1,0 +1,60 @@
+{
+ "operation": "Assets",
+ "query": "\nquery Assets($assetKeys: [AssetKeyInput!]) {\n  assetNodes(assetKeys: $assetKeys, loadMaterializations: true) {\n    assetKey { path }\n    groupName description computeKind kinds\n    isPartitioned isMaterializable isObservable hasAssetChecks\n    jobNames\n    dependencyKeys { path }\n    dependedByKeys { path }\n    owners { __typename ... on UserAssetOwner { email } ... on TeamAssetOwner { team } }\n    tags { key value }\n    repository { name location { name } }\n    partitionStats { numMaterialized numPartitions numFailed numMaterializing }\n    assetMaterializations(limit: 1) { timestamp runId }\n  }\n}\n",
+ "response": {
+  "data": {
+   "assetNodes": [
+    {
+     "assetKey": {
+      "path": [
+       "daily_events"
+      ]
+     },
+     "assetMaterializations": [
+      {
+       "runId": "00000000-0000-4000-8000-000000000005",
+       "timestamp": "1794723926722"
+      }
+     ],
+     "computeKind": null,
+     "dependedByKeys": [],
+     "dependencyKeys": [],
+     "description": "One file of events per day.",
+     "groupName": "raw",
+     "hasAssetChecks": false,
+     "isMaterializable": true,
+     "isObservable": false,
+     "isPartitioned": true,
+     "jobNames": [
+      "__ASSET_JOB"
+     ],
+     "kinds": [],
+     "owners": [],
+     "partitionStats": {
+      "numFailed": 1,
+      "numMaterialized": 2,
+      "numMaterializing": 0,
+      "numPartitions": 7
+     },
+     "repository": {
+      "location": {
+       "name": "definitions.py"
+      },
+      "name": "__repository__"
+     },
+     "tags": []
+    }
+   ]
+  }
+ },
+ "status": 200,
+ "variables": {
+  "assetKeys": [
+   {
+    "path": [
+     "daily_events"
+    ]
+   }
+  ]
+ }
+}

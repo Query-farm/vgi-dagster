@@ -1,0 +1,57 @@
+{
+ "operation": "Partitions",
+ "query": "query Partitions($assetKey: AssetKeyInput!) { assetNodeOrError(assetKey: $assetKey) { __typename ... on AssetNode { partitionKeys partitionKeysByDimension { name partitionKeys } assetPartitionStatuses { \n  __typename\n  ... on DefaultPartitionStatuses { materializedPartitions failedPartitions materializingPartitions }\n  ... on TimePartitionStatuses { ranges { startKey endKey status } }\n ... on MultiPartitionStatuses { primaryDimensionName ranges { primaryDimStartKey primaryDimEndKey secondaryDim { \n  __typename\n  ... on DefaultPartitionStatuses { materializedPartitions failedPartitions materializingPartitions }\n  ... on TimePartitionStatuses { ranges { startKey endKey status } }\n } } } } } ... on AssetNotFoundError { message } } }",
+ "response": {
+  "data": {
+   "assetNodeOrError": {
+    "__typename": "AssetNode",
+    "assetPartitionStatuses": {
+     "__typename": "TimePartitionStatuses",
+     "ranges": [
+      {
+       "endKey": "2026-01-02",
+       "startKey": "2026-01-01",
+       "status": "MATERIALIZED"
+      },
+      {
+       "endKey": "2026-01-03",
+       "startKey": "2026-01-03",
+       "status": "FAILED"
+      }
+     ]
+    },
+    "partitionKeys": [
+     "2026-01-01",
+     "2026-01-02",
+     "2026-01-03",
+     "2026-01-04",
+     "2026-01-05",
+     "2026-01-06",
+     "2026-01-07"
+    ],
+    "partitionKeysByDimension": [
+     {
+      "name": "default",
+      "partitionKeys": [
+       "2026-01-01",
+       "2026-01-02",
+       "2026-01-03",
+       "2026-01-04",
+       "2026-01-05",
+       "2026-01-06",
+       "2026-01-07"
+      ]
+     }
+    ]
+   }
+  }
+ },
+ "status": 200,
+ "variables": {
+  "assetKey": {
+   "path": [
+    "daily_events"
+   ]
+  }
+ }
+}

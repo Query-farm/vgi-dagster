@@ -1,0 +1,47 @@
+# name: test/sql/dagster_plus.test
+# description: Dagster+-style auth: the API token is sent as Dagster-Cloud-Api-Token
+# group: [dagster]
+#
+# DAGSTER_MOCK_API_AUTH is the same replay server with MOCK_API_TOKEN=test-token: it
+# rejects requests without that header and answers fullDeployments like Dagster+.
+
+require vgi
+
+require-env DAGSTER_WORKER
+
+require-env DAGSTER_MOCK_API_AUTH
+
+statement ok
+ATTACH 'dagster' (TYPE vgi, LOCATION '{DAGSTER_WORKER}');
+
+statement ok
+CREATE SECRET dagster_bad (TYPE dagster, BASE_URL '{DAGSTER_MOCK_API_AUTH}', API_TOKEN 'wrong-token');
+
+statement error
+SELECT count(*) FROM dagster.main.code_locations;
+----
+<REGEX>:.*HTTP 401.*API_TOKEN.*
+
+statement ok
+DROP SECRET dagster_bad;
+
+statement ok
+CREATE SECRET dagster_plus (TYPE dagster, BASE_URL '{DAGSTER_MOCK_API_AUTH}/graphql', API_TOKEN 'test-token');
+
+query TIT
+SELECT deployment_name, deployment_id, deployment_type FROM dagster.main.deployments ORDER BY deployment_id;
+----
+prod	1	PRODUCTION
+staging	2	DEV
+feature-branch-42	17	BRANCH
+
+query T
+SELECT location_name FROM dagster.main.code_locations;
+----
+definitions.py
+
+# The token is redacted in duckdb_secrets().
+query I
+SELECT count(*) FROM duckdb_secrets() WHERE secret_string LIKE '%test-token%';
+----
+0

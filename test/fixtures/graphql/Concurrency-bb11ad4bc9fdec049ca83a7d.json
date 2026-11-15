@@ -1,0 +1,13 @@
+{
+ "operation": "Concurrency",
+ "query": "\nquery Concurrency {\n  instance {\n    concurrencyLimits {\n      concurrencyKey slotCount limit usingDefaultLimit activeSlotCount pendingStepCount assignedStepCount activeRunIds\n    }\n  }\n}\n",
+ "response": {
+  "data": {
+   "instance": {
+    "concurrencyLimits": []
+   }
+  }
+ },
+ "status": 200,
+ "variables": {}
+}

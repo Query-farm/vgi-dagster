@@ -1,0 +1,51 @@
+{
+ "operation": "Repos",
+ "query": "query Repos { repositoriesOrError { __typename ... on RepositoryConnection { nodes { name location { name } id assetGroups { groupName } pipelines { name } schedules { name } sensors { name } } } ... on PythonError { message } } }",
+ "response": {
+  "data": {
+   "repositoriesOrError": {
+    "__typename": "RepositoryConnection",
+    "nodes": [
+     {
+      "assetGroups": [
+       {
+        "groupName": "analytics"
+       },
+       {
+        "groupName": "raw"
+       }
+      ],
+      "id": "678e56a69491c60d6e5a130da05b9d121a772ed0",
+      "location": {
+       "name": "definitions.py"
+      },
+      "name": "__repository__",
+      "pipelines": [
+       {
+        "name": "__ASSET_JOB"
+       },
+       {
+        "name": "etl_job"
+       },
+       {
+        "name": "raw_assets_job"
+       }
+      ],
+      "schedules": [
+       {
+        "name": "etl_job_schedule"
+       }
+      ],
+      "sensors": [
+       {
+        "name": "noop_sensor"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ },
+ "status": 200,
+ "variables": {}
+}

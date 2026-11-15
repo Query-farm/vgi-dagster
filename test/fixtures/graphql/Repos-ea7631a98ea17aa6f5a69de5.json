@@ -1,0 +1,63 @@
+{
+ "operation": "Repos",
+ "query": "query Repos { repositoriesOrError { __typename ... on RepositoryConnection { nodes { name location { name } pipelines { id name description isAssetJob tags { key value } schedules { name } sensors { name } } } } ... on PythonError { message } } }",
+ "response": {
+  "data": {
+   "repositoriesOrError": {
+    "__typename": "RepositoryConnection",
+    "nodes": [
+     {
+      "location": {
+       "name": "definitions.py"
+      },
+      "name": "__repository__",
+      "pipelines": [
+       {
+        "description": null,
+        "id": "419d3c40701e69ff28344466cefcefaf0a88f107",
+        "isAssetJob": true,
+        "name": "__ASSET_JOB",
+        "schedules": [],
+        "sensors": [],
+        "tags": []
+       },
+       {
+        "description": "A two-step ETL job; config can make the first step fail.",
+        "id": "2de0be5d805c80ee325d8909666b1019fef41a2a",
+        "isAssetJob": false,
+        "name": "etl_job",
+        "schedules": [
+         {
+          "name": "etl_job_schedule"
+         }
+        ],
+        "sensors": [
+         {
+          "name": "noop_sensor"
+         }
+        ],
+        "tags": [
+         {
+          "key": "team",
+          "value": "data"
+         }
+        ]
+       },
+       {
+        "description": null,
+        "id": "6749f09858b769de65f671a887274cbe5cfbc4bd",
+        "isAssetJob": true,
+        "name": "raw_assets_job",
+        "schedules": [],
+        "sensors": [],
+        "tags": []
+       }
+      ]
+     }
+    ]
+   }
+  }
+ },
+ "status": 200,
+ "variables": {}
+}

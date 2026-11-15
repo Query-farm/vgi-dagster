@@ -1,0 +1,50 @@
+{
+ "operation": "Runs",
+ "query": "query Runs($filter: RunsFilter, $cursor: String, $limit: Int!) { runsOrError(filter: $filter, cursor: $cursor, limit: $limit) { __typename ... on Runs { results { \n  runId status jobName mode creationTime startTime endTime updateTime rootRunId parentRunId\n  tags { key value }\n  assetSelection { path }\n  stats { __typename ... on RunStatsSnapshot { stepsSucceeded stepsFailed materializations enqueuedTime } }\n } } ... on InvalidPipelineRunsFilterError { message } ... on PythonError { message } } }",
+ "response": {
+  "data": {
+   "runsOrError": {
+    "__typename": "Runs",
+    "results": [
+     {
+      "assetSelection": null,
+      "creationTime": 1794723889.165609,
+      "endTime": 1794723905.346669,
+      "jobName": "etl_job",
+      "mode": "default",
+      "parentRunId": null,
+      "rootRunId": null,
+      "runId": "00000000-0000-4000-8000-000000000003",
+      "startTime": 1794723889.242281,
+      "stats": {
+       "__typename": "RunStatsSnapshot",
+       "enqueuedTime": null,
+       "materializations": 0,
+       "stepsFailed": 1,
+       "stepsSucceeded": 0
+      },
+      "status": "FAILURE",
+      "tags": [
+       {
+        "key": "dagster/failure_reason",
+        "value": "STEP_FAILURE"
+       }
+      ],
+      "updateTime": 1794723905.346669
+     }
+    ]
+   }
+  }
+ },
+ "status": 200,
+ "variables": {
+  "cursor": null,
+  "filter": {
+   "pipelineName": "etl_job",
+   "statuses": [
+    "FAILURE"
+   ]
+  },
+  "limit": 100
+ }
+}
