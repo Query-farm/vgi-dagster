@@ -1,6 +1,6 @@
 [project]
 name = "vgi-dagster-worker"
-version = "0.1.2"
+version = "0.1.3"
 description = "A VGI worker for DuckDB, generated from the Query.Farm VGI starter template."
 readme = "README.md"
 license = "0BSD"
