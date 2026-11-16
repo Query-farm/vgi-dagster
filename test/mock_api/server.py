@@ -117,7 +117,7 @@ class Handler(BaseHTTPRequestHandler):
         try:
             body = json.loads(self.rfile.read(int(self.headers.get("Content-Length") or 0)) or b"{}")
             query = str(body["query"])
-        except (ValueError, KeyError):
+        except ValueError, KeyError:
             self._send(400, {"errors": [{"message": "body must be JSON with a 'query'"}]})
             return
         variables = body.get("variables") or {}

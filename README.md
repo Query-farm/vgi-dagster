@@ -23,7 +23,7 @@ GROUP BY job_name ORDER BY failures DESC;
 
 ## Install
 
-Python 3.13+ and [uv](https://docs.astral.sh/uv/). The worker is not on PyPI; run it from a
+Python 3.14+ and [uv](https://docs.astral.sh/uv/). The worker is not on PyPI; run it from a
 release tag:
 
 ```bash
