@@ -164,7 +164,7 @@ class DagsterWorker(Worker):
         schemas=[
             Schema(
                 path=["main"],
-                comment=SCHEMA_DOC_MD,
+                comment="Dagster-native definitions, assets and runs, with filters pushed to Dagster's API.",
                 functions=FUNCTIONS,
                 tables=_tables(MAIN_TABLES, "main"),
                 tags={
@@ -181,7 +181,7 @@ class DagsterWorker(Worker):
             ),
             Schema(
                 path=["unified"],
-                comment=UNIFIED_DOC_MD,
+                comment="Dagster runs and steps in the shared cross-orchestrator shape.",
                 tables=_tables(UNIFIED_TABLES, "unified"),
                 tags={
                     "vgi.title": "Unified Orchestration",
