@@ -27,7 +27,7 @@ Python 3.14+ and [uv](https://docs.astral.sh/uv/). The worker is not on PyPI; ru
 release tag:
 
 ```bash
-uvx --from git+https://github.com/Query-farm/vgi-dagster@v0.1.3 vgi-dagster-worker --help
+uvx --from git+https://github.com/Query-farm/vgi-dagster@v0.2.0 vgi-dagster-worker --help
 ```
 
 Or from a checkout: `make build`, then use `/abs/path/to/vgi-dagster/.venv/bin/vgi-dagster-worker`.
@@ -39,10 +39,12 @@ SET allow_extension_repositories = 'allowed';
 CREATE EXTENSION REPOSITORY IF NOT EXISTS query_farm WITH PREFIX 'https://duckdb-extensions.query.farm';
 INSTALL vgi FROM query_farm;
 LOAD vgi FROM query_farm;
-ATTACH 'dagster' (TYPE vgi, LOCATION 'uvx --from git+https://github.com/Query-farm/vgi-dagster@v0.1.3 vgi-dagster-worker');
+ATTACH 'dagster' (TYPE vgi, LOCATION 'uvx --from git+https://github.com/Query-farm/vgi-dagster@v0.2.0 vgi-dagster-worker');
 ```
 
 **Haybarn 2.0** (`uvx haybarn-cli`): `INSTALL vgi FROM community; LOAD vgi;` then the same `ATTACH`.
+
+vgi-dagster 0.2.0 speaks VGI protocol 3.4, so it needs Haybarn 2.0.1 or newer (Haybarn 2.0.0 loads a 3.3 `vgi` extension that cannot attach it).
 
 ## Connect to Dagster
 
